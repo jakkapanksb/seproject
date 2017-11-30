@@ -19,35 +19,23 @@ import javax.swing.table.DefaultTableModel;
 
 import company.DatabaseConnector;
 import company.Personnel;
-import company.Time;
+import company.TimeSystem;
 
 public class HomePage {
 	
-	private Time time;
+	private TimeSystem timeSys;
 	private Boolean status;
 	private Personnel personnel;
+	private String personnelID;
 	private JFrame frame;
 	private JTable infoTable;
 
 	public HomePage(Boolean inStatus,Personnel inPersonnel) {
 		status = inStatus;
 		personnel = inPersonnel;
-		System.out.println(inPersonnel.getID());
-		time = new Time(personnel.getID());
-		//DatabaseConnector database = new DatabaseConnector();
-		//database.connectDB();
-		frame = new JFrame();
-		frame.setBounds(100, 100, 575, 460);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		/**frame.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		        database.closeDB();
-		        System.out.println("Connection close");
-		    }
-		});*/
-		frame.setTitle("Company");
+		personnelID = inPersonnel.getID();
+		timeSys = new TimeSystem();
+		
 		if (personnel.getPermission() == 1){
 			homeLevel1();
 		} else if (personnel.getPermission() == 2){
@@ -56,6 +44,12 @@ public class HomePage {
 	}
 	
 	private void homeLevel1(){
+		
+		frame = new JFrame();
+		frame.setBounds(100, 100, 575, 460);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.setTitle("Company");
 		
 		JLabel lblHome = new JLabel("Home");
 		lblHome.setFont(new Font(lblHome.getFont().getName(), lblHome.getFont().getStyle(), 30));
@@ -71,6 +65,7 @@ public class HomePage {
 		JButton btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
 				LoginPage login = new LoginPage();
 			}
 		});
@@ -78,7 +73,7 @@ public class HomePage {
 		JButton btnClockIn = new JButton("Clock In");
 		btnClockIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				time.setInTime();
+				TimeSystem.createInTime(personnelID);
 				frame.removeAll();
 				homeLevel1();
 				frame.validate();
@@ -89,8 +84,7 @@ public class HomePage {
 		JButton btnClockOut = new JButton("Clock Out");
 		btnClockOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				time.setOutTime();
-				time.calHour();
+				TimeSystem.createOutTime(personnelID);
 				frame.removeAll();
 				homeLevel1();
 				frame.validate();
@@ -152,6 +146,12 @@ public class HomePage {
 	}
 	
 private void homeLevel2(){
+	
+		frame = new JFrame();
+		frame.setBounds(100, 100, 575, 460);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.setTitle("Company");
 		
 		JLabel lblHome = new JLabel("Home");
 		lblHome.setFont(new Font(lblHome.getFont().getName(), lblHome.getFont().getStyle(), 30));
@@ -167,6 +167,7 @@ private void homeLevel2(){
 		JButton btnLogout = new JButton("Logout");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
 				LoginPage login = new LoginPage();
 			}
 		});
@@ -174,10 +175,10 @@ private void homeLevel2(){
 		JButton btnClockIn = new JButton("Clock In");
 		btnClockIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				time.setInTime();
-				//frame.removeAll();
-				//homeLevel2();
-				//frame.validate();
+				TimeSystem.createInTime(personnelID);
+				frame.removeAll();
+				homeLevel2();
+				frame.validate();
 			}
 		});
 		btnClockIn.setPreferredSize(new Dimension(90, 25));
@@ -185,11 +186,10 @@ private void homeLevel2(){
 		JButton btnClockOut = new JButton("Clock Out");
 		btnClockOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				time.setOutTime();
-				time.calHour();
-				//frame.removeAll();
-				//homeLevel2();
-				//frame.validate();
+				TimeSystem.createOutTime(personnelID);
+				frame.removeAll();
+				homeLevel2();
+				frame.validate();
 			}
 		});
 		btnClockOut.setPreferredSize(new Dimension(90, 25));
@@ -204,6 +204,7 @@ private void homeLevel2(){
 		btnSetWorkingTime.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SetWorkTimePage swt = new SetWorkTimePage(status,personnel);
+				System.exit(0);
 			}
 		});
 		
