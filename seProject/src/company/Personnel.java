@@ -40,4 +40,9 @@ public class Personnel {
 	public void setID(String id) {
 		this.id = id;
 	}
+
+	public float getSalary() {
+		// TODO Auto-generated method stub
+		return salary;
+	}
 }

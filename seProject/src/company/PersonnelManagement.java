@@ -11,11 +11,10 @@ public class PersonnelManagement {
 	public PersonnelManagement() {
 		database = new DatabaseConnector();
 		database.connectDB();
-		user = new Personnel(null,null,null,null,0,0);
 		allPersonnel = new ArrayList<Personnel>();
 		}
 	
-	public void setPersonnelID(String username){
+	public void setPersonnel(String username){
 		user.setID(database.getID_withUsername(username));
 	}
 	
@@ -24,23 +23,27 @@ public class PersonnelManagement {
 	}
 	
 	public Personnel getPersonnel(){
-		return database.getPersonnel_withID(user.getID());
+		return user;
 	}
 	
 	public ArrayList<Personnel> getAllPersonnel(){
+		allPersonnel = database.getAllPersonnel();
 		return allPersonnel;
 	}
 	
 	public void addPersonnel(String name, String position, String department,int permission, float salary) {
-		
+		Personnel newPersonnel = new Personnel("0",name,position,department,permission,salary);
+		getAllPersonnel();
+		String id = allPersonnel.get(allPersonnel.size()-1).getID();
+		database.addPersonnelToDB(id, newPersonnel);
 	}
 	
 	public void editPersonnel() {
-		
+		database.editPersonnelToDB();
 	}
 	
-	public void deletePersonnel() {
-		
+	public void deletePersonnel(String id) {
+		database.deletePersonnelDB(id);
 	}
 
 }

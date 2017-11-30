@@ -74,10 +74,10 @@ public class DatabaseConnector {
 		return checkStatus;
 	}
 
-	public Personnel getPersonnel_withID(String id) {
+	public Personnel getPersonnel_withID(String username) {
 		Personnel personnel = null;
 		try {
-			String query = "Select * from personnel where id=" + id;
+			String query = "Select * from personnel where name=" + username;
 			ResultSet resultSet = statement.executeQuery(query);
 			while (resultSet.next()) {
 				String newId = resultSet.getString(1);
@@ -191,25 +191,63 @@ public class DatabaseConnector {
 					"FROM personnel" + 
 					"INNER JOIN time ON time.id=personnel.id";
 			ResultSet resultSet = statement.executeQuery(query);
+			ArrayList<Time> allTime = new ArrayList<Time>();
 			while (resultSet.next()) {
-				ArrayList<Time> allTime = new ArrayList<Time>();
 				//Time newTime = new Time(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
-				return allTime;
 			}
+			return allTime;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public void addPersonnelToDB() {
+	public ArrayList<Personnel> getAllPersonnel(){
 		try {
+			String query = "SELECT * FROM personnel";
+			ResultSet resultSet = statement.executeQuery(query);
+			ArrayList<Personnel> allPersonnel = new ArrayList<Personnel>();
+			while (resultSet.next()) {
+				Personnel newPersonnel = new Personnel(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5), resultSet.getFloat(6));
+				allPersonnel.add(newPersonnel);
+			}
+			return allPersonnel;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void addPersonnelToDB(String id,Personnel personnel) {
+		try {
+			int addID = Integer.parseInt(id)+1;
 			String query = "INSERT personnel set id=?, name=?, position=?, department=?, permission=?, salary=?";
 			PreparedStatement preparedStmt = connect.prepareStatement(query);
-			//preparedStmt.setString(1, );
-			//preparedStmt.setString(2, clockOutTime);
+			preparedStmt.setString(1, addID+"");
+			preparedStmt.setString(2, personnel.getName());
+			preparedStmt.setString(3, personnel.getPosition());
+			preparedStmt.setString(4, personnel.getDepartment());
+			preparedStmt.setInt(5, personnel.getPermission());
+			preparedStmt.setFloat(6, personnel.getSalary());
 			preparedStmt.executeUpdate();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void editPersonnelToDB() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void deletePersonnelDB(String id) {
+		// TODO Auto-generated method stub
+		try {
+		String query = "DELETE FROM personnel WHERE id=?";
+		PreparedStatement preparedStmt = connect.prepareStatement(query);
+		preparedStmt.setString(1, id);
+		preparedStmt.executeUpdate();
+		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 	}
