@@ -9,9 +9,13 @@ import java.util.Date;
 public class Time {
 	
 	private String personnelID;
+	private String name;
+	private Date date;
 	private Date inTime;
 	private Date outTime;
+	private float salary;
 	private DatabaseConnector database;
+	private float salaryPerH = salary/6;
 	
 	public Time(String id){
 		database = new DatabaseConnector();
@@ -36,7 +40,22 @@ public class Time {
 	}
 	
 	public void calHour(){
-		//connect with DB
+		Date[] clockin_out = getClockin_out();
+		int checkIn = inTime.getHours();
+		if(inTime.getMinutes()>=45){
+			checkIn++;
+		}
+		if(checkIn > clockin_out[0].getHours()){
+			salary -= (checkIn - clockin_out[0].getHours())*salaryPerH;
+		}
+		int checkOut = outTime.getHours();
+		if(outTime.getMinutes()>=45){
+			checkOut++;
+		}
+		if(checkOut > clockin_out[1].getHours()){
+			salary += (checkOut - clockin_out[1].getHours())*salaryPerH;
+		}
+		
 	}
 	
 	public Date[] getClockin_out(){
