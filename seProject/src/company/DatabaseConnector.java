@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class DatabaseConnector {
 
@@ -84,7 +85,8 @@ public class DatabaseConnector {
 				String position = resultSet.getString(3);
 				String department = resultSet.getString(4);
 				int permission = resultSet.getInt(5);
-				personnel = new Personnel(newId, name, position, department, permission);
+				float salary = resultSet.getFloat(6);
+				personnel = new Personnel(newId, name, position, department, permission,salary);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -177,6 +179,39 @@ public class DatabaseConnector {
 
 	public void setStatus() {
 
+	}
+	
+	public void updateSalary() {
+		
+	}
+	
+	public ArrayList<Time> getAllTime() {
+		try {
+			String query = "SELECT personnel.id, personnel.name, time.date, time.inTime, time.outTime" + 
+					"FROM personnel" + 
+					"INNER JOIN time ON time.id=personnel.id";
+			ResultSet resultSet = statement.executeQuery(query);
+			while (resultSet.next()) {
+				ArrayList<Time> allTime = new ArrayList<Time>();
+				//Time newTime = new Time(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
+				return allTime;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void addPersonnelToDB() {
+		try {
+			String query = "INSERT personnel set id=?, name=?, position=?, department=?, permission=?, salary=?";
+			PreparedStatement preparedStmt = connect.prepareStatement(query);
+			//preparedStmt.setString(1, );
+			//preparedStmt.setString(2, clockOutTime);
+			preparedStmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
