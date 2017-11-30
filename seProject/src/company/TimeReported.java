@@ -1,5 +1,7 @@
 package company;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeReported {
@@ -13,12 +15,17 @@ public class TimeReported {
 	private DatabaseConnector database;
 	private float salaryPerHour;
 	
-	public TimeReported(String id,String inName,Date inDate,Date inTime,Date outTime,float inSalary){
+	public TimeReported(String id,String inName,String inDate,String inTime,String outTime,float inSalary){
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		personnelID = id;
 		name = inName;
-		date = inDate;
-		this.inTime = inTime;
-		this.outTime = outTime;
+		try {
+			date = sdf.parse(inDate);
+			this.inTime = sdf.parse(inTime);
+			this.outTime = sdf.parse(outTime);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		salary = inSalary;
 		salaryPerHour = salary/6;
 		calHour();
@@ -42,5 +49,9 @@ public class TimeReported {
 			salary += (checkOut - clockin_out[1].getHours())*salaryPerHour;
 		}
 		
+	}
+
+	public String getID() {
+		return personnelID;
 	}
 }
