@@ -1,69 +1,106 @@
 package view;
 
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.EventQueue;
 
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Color;
+import javax.swing.JButton;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import java.awt.Font;
+import java.awt.Image;
+
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+
+import company.SystemCompany;
+import view.HomePage;
+
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-
-import company.DatabaseConnector;
-import company.SystemCompany;
+import javax.swing.JPasswordField;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class LoginPage {
 
-	private SystemCompany system;
-	private JFrame frame;
+	private JFrame frmLogin;
+	JLabel bgPanel;
 	private JTextField usernameField;
 	private JPasswordField passwordField;
-	
+	private SystemCompany system;
+	private JLabel bgPanel_1;
+
+	/**
+	 * Create the application.
+	 */
 	public LoginPage() {
-		system = new SystemCompany();
-		//DatabaseConnector database = new DatabaseConnector();
-		//database.connectDB();
-		frame = new JFrame();
-		frame.setBounds(100, 100, 575, 460);
-		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		frame.setVisible(true);
-		/**frame.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		        database.closeDB();
-		        System.out.println("Connection close");
-		    }
-		});*/
-		frame.setTitle("Company");
-		login();
+		
+	//apply look and feel
+			try {
+			    for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+			        if ("Nimbus".equals(info.getName())) {
+			            UIManager.setLookAndFeel(info.getClassName());
+			            break;
+			        }
+			    }
+			} catch (Exception e) {
+			    // If Nimbus is not available, you can set the GUI to another look and feel.
+			}
+			
+	//create contents
+			
+			system = new SystemCompany();
+			frmLogin = new JFrame();
+			frmLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frmLogin.setIconImage(Toolkit.getDefaultToolkit().getImage(LoginPage.class.getResource("/com/sun/java/swing/plaf/windows/icons/Computer.gif")));
+			frmLogin.setTitle("Login");
+			frmLogin.setBounds(100, 100, 450, 390);
+			frmLogin.getContentPane().setLayout(null);
+			frmLogin.setVisible(true);
+			
+			
+			initialize();
 	}
-	
-	private void login(){
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
 		
-		JLabel lblLogin = new JLabel("Login");
-		lblLogin.setFont(new Font(lblLogin.getFont().getName(), lblLogin.getFont().getStyle(), 30));
-		
-		JLabel lblUsername = new JLabel("Username");
-		
-		usernameField = new JTextField();
-		usernameField.setColumns(10);
-		
-		JLabel lblPassword = new JLabel("Password");
-		
-		passwordField = new JPasswordField();
-		passwordField.setColumns(10);
-		
-		JButton btnLogin = new JButton("Login");
-		btnLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+		BufferedImage img = null;
+		Image dimg = null;
+		JLabel bgPanel =new JLabel();
+		bgPanel.setBounds(0, 0, 434, 351);
+		try {
+			img = ImageIO.read(this.getClass().getResource("bg.png"));
+			dimg = img.getScaledInstance(bgPanel.getWidth(), bgPanel.getHeight(),Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		JPanel bgPanel = new JPanel();
+		bgPanel_1 =new JLabel(new ImageIcon(dimg));			
+		//bgPanel.setBackground(Color.PINK);
+		bgPanel_1.setBounds(0, 0, 434, 351);
+		frmLogin.getContentPane().add(bgPanel_1);
+		bgPanel_1.setLayout(null);
+		JButton loginButton = new JButton("Login");
+		loginButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
 				String inUsername = usernameField.getText();
 				String inPassword = passwordField.getText();
 				Boolean checkPW = system.checkPW(inUsername, inPassword);
@@ -71,56 +108,75 @@ public class LoginPage {
 					system.setPersonnelID(inUsername);
 					Boolean status = system.checkStatus();
 					//System.exit(0);
+					frmLogin.dispose();
 					HomePage homePage = new HomePage(status,system.getPersonnel());
 				} else{
 					JOptionPane t = new JOptionPane();
-		        	t.showMessageDialog(frame,
+		        	t.showMessageDialog(frmLogin,
 		        		    "Username or Password is incorrect.",
 		        		    "Fail to Login",
 		        		    t.ERROR_MESSAGE);
 				}
 			}
 		});
+		loginButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+		loginButton.setBounds(10, 302, 203, 38);
+		bgPanel_1.add(loginButton);
+		loginButton.setForeground(new Color(0, 0, 0));
+		loginButton.setBackground(new Color(135, 206, 235));
 		
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(171, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-									.addComponent(lblPassword)
-									.addComponent(lblUsername)
-									.addComponent(usernameField, GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-									.addComponent(passwordField))
-								.addGap(169))
-							.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-								.addComponent(btnLogin)
-								.addGap(247)))
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addComponent(lblLogin)
-							.addGap(238))))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(70)
-					.addComponent(lblLogin)
-					.addGap(37)
-					.addComponent(lblUsername)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(usernameField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(lblPassword)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(27)
-					.addComponent(btnLogin)
-					.addContainerGap(124, Short.MAX_VALUE))
-		);
-		frame.getContentPane().setLayout(groupLayout);
+		JLabel imgPanel = new JLabel();
+		imgPanel.setBounds(10, 101, 115, 130);
+		try {
+			img = ImageIO.read(this.getClass().getResource("account.png"));
+			dimg = img.getScaledInstance(imgPanel.getWidth(), imgPanel.getHeight(),Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		imgPanel = new JLabel(new ImageIcon(dimg));
+		imgPanel.setBounds(10, 101, 115, 130);
+		bgPanel_1.add(imgPanel);
+		
+		JLabel lblLogin = new JLabel("Login");
+		lblLogin.setFont(new Font("Verdana", Font.PLAIN, 28));
+		lblLogin.setBounds(175, 30, 84, 52);
+		bgPanel_1.add(lblLogin);
+		
+		JButton closeButton = new JButton("Close");
+		closeButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				System.exit(0);
+			}
+		});
+		closeButton.setBackground(new Color(255, 192, 203));
+		closeButton.setFont(new Font("Verdana", Font.PLAIN, 16));
+		closeButton.setBounds(223, 302, 201, 38);
+		bgPanel_1.add(closeButton);
+		
+		usernameField = new JTextField();
+		usernameField.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
+		usernameField.setBounds(135, 126, 289, 31);
+		bgPanel_1.add(usernameField);
+		usernameField.setColumns(10);
+		usernameField.requestFocusInWindow();
+		
+		passwordField = new JPasswordField();
+		passwordField.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
+		passwordField.setBounds(135, 193, 289, 31);
+		bgPanel_1.add(passwordField);
+		
+		JLabel lblUsername = new JLabel("Username :");
+		lblUsername.setFont(new Font("Verdana", Font.PLAIN, 14));
+		lblUsername.setBounds(135, 101, 101, 14);
+		bgPanel_1.add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("Password :");
+		lblPassword.setFont(new Font("Verdana", Font.PLAIN, 14));
+		lblPassword.setBounds(135, 168, 92, 14);
+		bgPanel_1.add(lblPassword);
+		
+		frmLogin.repaint();
 	}
-	
 }
