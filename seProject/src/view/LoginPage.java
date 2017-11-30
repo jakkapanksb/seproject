@@ -33,7 +33,7 @@ public class LoginPage {
 		//database.connectDB();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 575, 460);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setVisible(true);
 		/**frame.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
@@ -70,7 +70,7 @@ public class LoginPage {
 				if (checkPW == true){
 					system.setPersonnelID(inUsername);
 					Boolean status = system.checkStatus();
-					System.exit(0);
+					//System.exit(0);
 					HomePage homePage = new HomePage(status,system.getPersonnel());
 				} else{
 					JOptionPane t = new JOptionPane();
