@@ -6,7 +6,8 @@ public class PersonnelManagement {
 	
 	private DatabaseConnector database;
 	private ArrayList<Personnel> allPersonnel;
-	private Personnel user;
+	
+	private int test;
 	
 	public PersonnelManagement() {
 		database = new DatabaseConnector();
