@@ -176,14 +176,6 @@ public class DatabaseConnector {
 		}
 		return null;
 	}
-
-	public void setStatus() {
-
-	}
-	
-	public void updateSalary() {
-		
-	}
 	
 	public ArrayList<Time> getAllTime() {
 		try {
@@ -235,8 +227,15 @@ public class DatabaseConnector {
 		}
 	}
 
-	public void editPersonnelToDB() {
+	public void editPersonnelToDB(Personnel personnel) {
 		// TODO Auto-generated method stub
+		try {
+			String query = "DELETE FROM personnel WHERE id=?";
+			PreparedStatement preparedStmt = connect.prepareStatement(query);
+			preparedStmt.executeUpdate();
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
 		
 	}
 

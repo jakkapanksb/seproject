@@ -32,14 +32,24 @@ public class PersonnelManagement {
 	}
 	
 	public void addPersonnel(String name, String position, String department,int permission, float salary) {
-		Personnel newPersonnel = new Personnel("0",name,position,department,permission,salary);
+		Personnel newPersonnel = new Personnel(null,name,position,department,permission,salary);
 		getAllPersonnel();
 		String id = allPersonnel.get(allPersonnel.size()-1).getID();
 		database.addPersonnelToDB(id, newPersonnel);
 	}
 	
-	public void editPersonnel() {
-		database.editPersonnelToDB();
+	public void editPersonnel(String id,String name, String position, String department,int permission, float salary) {
+		Personnel newPersonnel = new Personnel(id,name,position,department,permission,salary);
+		database.editPersonnelToDB(newPersonnel);
+	}
+	
+	public Personnel showPersonnel(String id) {
+		for (Personnel personnel : allPersonnel) {
+			if(personnel.getID().matches(id)) {
+				return personnel;
+			}
+		}
+		return null;
 	}
 	
 	public void deletePersonnel(String id) {
