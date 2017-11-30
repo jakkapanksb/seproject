@@ -2,7 +2,7 @@ package company;
 
 public class SystemCompany {
 
-	private String personnelID;
+	private Personnel user;
 	private DatabaseConnector database;
 	
 	public SystemCompany() {
@@ -19,14 +19,15 @@ public class SystemCompany {
 	}
 	
 	public void setPersonnelID(String username){
-		personnelID = database.getID_withUsername(username);
+		String id = database.getID_withUsername(username);
+		user = database.getPersonnel_withID(id);
 	}
 	
 	public Boolean checkStatus(){
-		return database.getStatus(personnelID);
+		return database.getStatus(user.getID());
 	}
 	
 	public Personnel getPersonnel(){
-		return database.getPersonnel_withID(personnelID);
+		return user;
 	}
 }
