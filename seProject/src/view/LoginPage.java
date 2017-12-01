@@ -33,7 +33,7 @@ public class LoginPage {
 		//database.connectDB();
 		frame = new JFrame();
 		frame.setBounds(100, 100, 575, 460);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		frame.setVisible(true);
 		/**frame.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
