@@ -18,7 +18,7 @@ import javax.swing.SpinnerDateModel;
 
 import company.DatabaseConnector;
 import company.Personnel;
-import company.Time;
+import company.TimeSystem;
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -26,7 +26,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class SetWorkTimePage {
 	
-	private Time time;
+	private TimeSystem timeSys;
 	private Boolean status;
 	private Personnel personnel;
 	private JFrame frame;
@@ -34,20 +34,12 @@ public class SetWorkTimePage {
 	public SetWorkTimePage(Boolean inStatus,Personnel inPersonnel) {
 		status = inStatus;
 		personnel = inPersonnel;
-		time = new Time(personnel.getID());
-		//DatabaseConnector database = new DatabaseConnector();
-		//database.connectDB();
+		timeSys = new TimeSystem();
+
 		frame = new JFrame();
 		frame.setBounds(100, 100, 575, 460);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		/**frame.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		        database.closeDB();
-		        System.out.println("Connection close");
-		    }
-		});*/
 		frame.setTitle("Company");
 		setWorkTime();
 	}
@@ -59,7 +51,7 @@ public class SetWorkTimePage {
 		
 		JLabel lblClockIn = new JLabel("Clock In");
 		
-		Date timeClockIn = time.getClockin_out()[0];
+		Date timeClockIn = timeSys.getClockin_out()[0];
 		SpinnerDateModel sm = new SpinnerDateModel(timeClockIn, null, null, Calendar.HOUR_OF_DAY);
 		JSpinner spinnerClockIn = new JSpinner(sm);
 		JSpinner.DateEditor de = new JSpinner.DateEditor(spinnerClockIn, "HH:mm");
@@ -67,7 +59,7 @@ public class SetWorkTimePage {
 		
 		JLabel lblClockOut = new JLabel("Clock Out");
 		
-		Date timeClockOut = time.getClockin_out()[1];
+		Date timeClockOut = timeSys.getClockin_out()[1];
 		sm = new SpinnerDateModel(timeClockOut, null, null, Calendar.HOUR_OF_DAY);
 		JSpinner spinnerClockOut = new JSpinner(sm);
 		de = new JSpinner.DateEditor(spinnerClockOut, "HH:mm");
@@ -76,6 +68,7 @@ public class SetWorkTimePage {
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				System.exit(0);
 				HomePage homePage = new HomePage(status,personnel);
 			}
 		});
@@ -95,7 +88,8 @@ public class SetWorkTimePage {
 				if(dialogResult == JOptionPane.YES_OPTION){
 					Date clockInTime = (Date) spinnerClockIn.getValue();
 					Date clockOutTime = (Date) spinnerClockOut.getValue();
-					time.changeWorkTime(clockInTime,clockOutTime);
+					timeSys.changeWorkTime(clockInTime,clockOutTime);
+					System.exit(0);
 					HomePage homePage = new HomePage(status,personnel);
 				}
 			}

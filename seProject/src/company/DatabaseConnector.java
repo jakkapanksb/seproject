@@ -177,15 +177,16 @@ public class DatabaseConnector {
 		return null;
 	}
 	
-	public ArrayList<Time> getAllTime() {
+	public ArrayList<TimeReported> getAllTime() {
 		try {
-			String query = "SELECT personnel.id, personnel.name, time.date, time.inTime, time.outTime" + 
+			String query = "SELECT personnel.id, personnel.name, time.date, time.inTime, time.outTime, personnel.salary" + 
 					"FROM personnel" + 
 					"INNER JOIN time ON time.id=personnel.id";
 			ResultSet resultSet = statement.executeQuery(query);
-			ArrayList<Time> allTime = new ArrayList<Time>();
+			ArrayList<TimeReported> allTime = new ArrayList<TimeReported>();
 			while (resultSet.next()) {
-				//Time newTime = new Time(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getString(5));
+				TimeReported timeRe = new TimeReported(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),resultSet.getFloat(6));
+				allTime.add(timeRe);
 			}
 			return allTime;
 		} catch (SQLException e) {

@@ -70,6 +70,7 @@ public class LoginPage {
 				if (checkPW == true){
 					system.setPersonnelID(inUsername);
 					Boolean status = system.checkStatus();
+					System.exit(0);
 					HomePage homePage = new HomePage(status,system.getPersonnel());
 				} else{
 					JOptionPane t = new JOptionPane();

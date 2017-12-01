@@ -1,42 +1,35 @@
 package company;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 
-public class Time {
+public class TimeSystem {
+
+	private static DatabaseConnector database;
+	private ArrayList<TimeReported> timeReporteds;
 	
-	private String personnelID;
-	private Date inTime;
-	private Date outTime;
-	private DatabaseConnector database;
-	
-	public Time(String id){
+	public TimeSystem(){
 		database = new DatabaseConnector();
 		database.connectDB();
-		personnelID = id;
+		timeReporteds = new ArrayList<TimeReported>();
 	}
 	
-	public void setInTime(){
-		inTime = new Date();
+	public static void createInTime(String id){
+		Date time = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-		String time = sdf.format(inTime);
+		String stime = sdf.format(time);
 		sdf = new SimpleDateFormat("dd/mm/yyyy");
-		String date = sdf.format(inTime);
-		database.insertInTime(personnelID,date,time);
+		String date = sdf.format(time);
+		database.insertInTime(id,date,stime);
 	}
 	
-	public void setOutTime(){
-		outTime = new Date();
+	public static void createOutTime(String id){
+		Date time = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-		String time = sdf.format(outTime);
-		database.updateOutTime(personnelID,time);
-	}
-	
-	public void calHour(){
-		//connect with DB
+		String stime = sdf.format(time);
+		database.updateOutTime(id,stime);
 	}
 	
 	public Date[] getClockin_out(){
@@ -47,13 +40,11 @@ public class Time {
 		try {
 			clockIn = sdf.parse(workTime[0]);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
 			clockOut = sdf.parse(workTime[1]);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Date[] list = {clockIn,clockOut};
@@ -67,10 +58,17 @@ public class Time {
 		String clockOutTime = sdf.format(endTime);
 		database.updateWorkTime(clockInTime,clockOutTime);
 	}
-
-//	test function
-//	public void getTime(){
-//		System.out.println(logInTime);
-//		System.out.println(logOutTime);
-//	}
+	
+	public ArrayList<TimeReported> getAllTimeReported(){
+		return timeReporteds;
+	}
+	
+	public TimeReported getUserTimeReported(String id){
+		for (TimeReported timeRe : timeReporteds){
+			if (timeRe.getID().matches(id)){
+				return timeRe;
+			}
+		}
+		return null;
+	}
 }
