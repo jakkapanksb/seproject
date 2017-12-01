@@ -31,15 +31,19 @@ public class PersonnelManagement {
 		return allPersonnel;
 	}
 	
-	public void addPersonnel(String name, String position, String department,int permission, float salary) {
-		Personnel newPersonnel = new Personnel(null,name,position,department,permission,salary);
+	public void addPersonnel(String name, String position, String department,String permission, String salary) {
+		int ipermission = Integer.parseInt(permission);
+		float fsalary = Float.parseFloat(salary);
+		Personnel newPersonnel = new Personnel(null,name,position,department,ipermission,fsalary);
 		getAllPersonnel();
 		String id = allPersonnel.get(allPersonnel.size()-1).getID();
 		database.addPersonnelToDB(id, newPersonnel);
 	}
 	
-	public void editPersonnel(String id,String name, String position, String department,int permission, float salary) {
-		Personnel newPersonnel = new Personnel(id,name,position,department,permission,salary);
+	public void editPersonnel(String id,String name, String position, String department,String permission, String salary) {
+		int ipermission = Integer.parseInt(permission);
+		float fsalary = Float.parseFloat(salary);
+		Personnel newPersonnel = new Personnel(id,name,position,department,ipermission,fsalary);
 		database.editPersonnelToDB(newPersonnel);
 	}
 	

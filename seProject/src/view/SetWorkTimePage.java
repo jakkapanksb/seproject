@@ -22,6 +22,8 @@ import company.TimeSystem;
 
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import java.awt.Color;
+import java.awt.Toolkit;
 
 
 public class SetWorkTimePage {
@@ -29,25 +31,33 @@ public class SetWorkTimePage {
 	private TimeSystem timeSys;
 	private Boolean status;
 	private Personnel personnel;
-	private JFrame frame;
+	private JFrame frmSetWorkkingTime;
+	private JFrame frmHomePage;
 	
-	public SetWorkTimePage(Boolean inStatus,Personnel inPersonnel) {
+	public SetWorkTimePage(Boolean inStatus,Personnel inPersonnel, JFrame frmHomePage) {
 		status = inStatus;
 		personnel = inPersonnel;
 		timeSys = new TimeSystem();
+		this.frmHomePage = frmHomePage;
 
-		frame = new JFrame();
-		frame.setBounds(100, 100, 575, 460);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		frame.setTitle("Company");
+		frmSetWorkkingTime = new JFrame();
+		frmSetWorkkingTime.setIconImage(Toolkit.getDefaultToolkit().getImage(SetWorkTimePage.class.getResource("/javax/swing/plaf/metal/icons/ocean/collapsed-rtl.gif")));
+		frmSetWorkkingTime.getContentPane().setBackground(new Color(255, 255, 224));
+		frmSetWorkkingTime.setBounds(100, 100, 302, 235);
+		frmSetWorkkingTime.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frmSetWorkkingTime.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		    	frmHomePage.setEnabled(true);
+		    	frmSetWorkkingTime.dispose();
+		    }
+		});
+		frmSetWorkkingTime.setVisible(true);
+		frmSetWorkkingTime.setTitle("Set Workking Time");
 		setWorkTime();
 	}
 	
 	private void setWorkTime(){
-		
-		JLabel lblSetWorkingTime = new JLabel("Set Working Time");
-		lblSetWorkingTime.setFont(new Font(lblSetWorkingTime.getFont().getName(), lblSetWorkingTime.getFont().getStyle(), 30));
 		
 		JLabel lblClockIn = new JLabel("Clock In");
 		
@@ -66,18 +76,20 @@ public class SetWorkTimePage {
 		spinnerClockOut.setEditor(de);
 		
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setBackground(new Color(255, 192, 203));
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.exit(0);
-				HomePage homePage = new HomePage(status,personnel);
+				frmHomePage.setEnabled(true);
+				frmSetWorkkingTime.dispose();
 			}
 		});
 		
 		JButton btnOk = new JButton("OK");
+		btnOk.setBackground(new Color(240, 255, 240));
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Object[] options = {"Yes","No"};
-				int dialogResult  = JOptionPane.showOptionDialog(frame,
+				int dialogResult  = JOptionPane.showOptionDialog(frmSetWorkkingTime,
 								"Are you sure want change working time?",
 								"Set Working Time",
 								JOptionPane.YES_NO_OPTION,
@@ -95,49 +107,46 @@ public class SetWorkTimePage {
 			}
 		});
 		
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(frmSetWorkkingTime.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(88)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGap(20)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(83)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblClockIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addGap(171))
-								.addComponent(spinnerClockIn, GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-								.addComponent(lblClockOut)
-								.addComponent(spinnerClockOut, GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btnCancel)
-									.addPreferredGap(ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
-									.addComponent(btnOk)))
-							.addGap(169))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblSetWorkingTime)
-							.addGap(148))))
+							.addComponent(lblClockOut)
+							.addContainerGap())
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+							.addGroup(groupLayout.createSequentialGroup()
+								.addComponent(lblClockIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addGap(228))
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+									.addComponent(spinnerClockOut, Alignment.LEADING)
+									.addComponent(spinnerClockIn, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+									.addGroup(groupLayout.createSequentialGroup()
+										.addComponent(btnOk)
+										.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnCancel)))
+								.addContainerGap()))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(50)
-					.addComponent(lblSetWorkingTime)
-					.addGap(37)
+					.addGap(24)
 					.addComponent(lblClockIn)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(spinnerClockIn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(12)
+					.addGap(18)
 					.addComponent(lblClockOut)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(spinnerClockOut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(27)
+					.addGap(18)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnCancel)
 						.addComponent(btnOk))
-					.addContainerGap(136, Short.MAX_VALUE))
+					.addContainerGap(33, Short.MAX_VALUE))
 		);
-		frame.getContentPane().setLayout(groupLayout);
+		frmSetWorkkingTime.getContentPane().setLayout(groupLayout);
 	}
 }

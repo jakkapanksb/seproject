@@ -74,10 +74,10 @@ public class DatabaseConnector {
 		return checkStatus;
 	}
 
-	public Personnel getPersonnel_withID(String username) {
+	public Personnel getPersonnel_withID(String id) {
 		Personnel personnel = null;
 		try {
-			String query = "Select * from personnel where name=" + username;
+			String query = "Select * from personnel where id=\"" + id+"\"";
 			ResultSet resultSet = statement.executeQuery(query);
 			while (resultSet.next()) {
 				String newId = resultSet.getString(1);
@@ -179,13 +179,11 @@ public class DatabaseConnector {
 	
 	public ArrayList<TimeReported> getAllTime() {
 		try {
-			String query = "SELECT personnel.id, personnel.name, time.date, time.inTime, time.outTime, personnel.salary" + 
-					"FROM personnel" + 
-					"INNER JOIN time ON time.id=personnel.id";
+			String query = "SELECT personnel.id, personnel.name, time.date, time.inTime, time.outTime, personnel.salaryPerDay FROM personnel INNER JOIN time ON time.id=personnel.id";
 			ResultSet resultSet = statement.executeQuery(query);
 			ArrayList<TimeReported> allTime = new ArrayList<TimeReported>();
 			while (resultSet.next()) {
-				TimeReported timeRe = new TimeReported(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),resultSet.getFloat(6));
+				TimeReported timeRe = new TimeReported(resultSet.getInt(1)+"", resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getString(5),resultSet.getFloat(6));
 				allTime.add(timeRe);
 			}
 			return allTime;
@@ -197,13 +195,14 @@ public class DatabaseConnector {
 	
 	public ArrayList<Personnel> getAllPersonnel(){
 		try {
-			String query = "SELECT * FROM personnel";
+			String query = "SELECT * FROM company.personnel";
 			ResultSet resultSet = statement.executeQuery(query);
 			ArrayList<Personnel> allPersonnel = new ArrayList<Personnel>();
 			while (resultSet.next()) {
-				Personnel newPersonnel = new Personnel(resultSet.getString(1), resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5), resultSet.getFloat(6));
+				Personnel newPersonnel = new Personnel(resultSet.getInt(1)+"", resultSet.getString(2),resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5), resultSet.getFloat(6));
 				allPersonnel.add(newPersonnel);
 			}
+			System.out.println(allPersonnel);
 			return allPersonnel;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -214,7 +213,7 @@ public class DatabaseConnector {
 	public void addPersonnelToDB(String id,Personnel personnel) {
 		try {
 			int addID = Integer.parseInt(id)+1;
-			String query = "INSERT personnel set id=?, name=?, position=?, department=?, permission=?, salary=?";
+			String query = "INSERT personnel set id=?, name=?, position=?, department=?, permission=?, salaryPerDay=?";
 			PreparedStatement preparedStmt = connect.prepareStatement(query);
 			preparedStmt.setString(1, addID+"");
 			preparedStmt.setString(2, personnel.getName());

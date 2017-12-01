@@ -16,18 +16,19 @@ public class TimeReported {
 	private float salaryPerHour;
 	
 	public TimeReported(String id,String inName,String inDate,String inTime,String outTime,float inSalary){
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		personnelID = id;
 		name = inName;
 		try {
-			date = sdf.parse(inDate);
-			this.inTime = sdf.parse(inTime);
-			this.outTime = sdf.parse(outTime);
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			setDate(sdf.parse(inDate));
+			sdf = new SimpleDateFormat("HH:mm");
+			this.setInTime(sdf.parse(inTime));
+			this.setOutTime(sdf.parse(outTime));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		salary = inSalary;
-		salaryPerHour = salary/6;
+		setSalary(inSalary);
+		salaryPerHour = getSalary()/6;
 		calHour();
 	}
 	
@@ -39,19 +40,58 @@ public class TimeReported {
 			checkIn++;
 		}
 		if(checkIn > clockin_out[0].getHours()){
-			salary -= (checkIn - clockin_out[0].getHours())*salaryPerHour;
+			setSalary(getSalary() - (checkIn - clockin_out[0].getHours())*salaryPerHour);
 		}
 		int checkOut = outTime.getHours();
 		if(outTime.getMinutes()>=45){
 			checkOut++;
 		}
 		if(checkOut > clockin_out[1].getHours()){
-			salary += (checkOut - clockin_out[1].getHours())*salaryPerHour;
+			setSalary(getSalary() + (checkOut - clockin_out[1].getHours())*salaryPerHour);
 		}
 		
 	}
 
 	public String getID() {
 		return personnelID;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public String getDate() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		return sdf.format(inTime);
+	}
+
+	private void setDate(Date date) {
+		this.date = date;
+	}
+
+	public String getInTime() {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		return sdf.format(inTime);
+	}
+
+	private void setInTime(Date inTime) {
+		this.inTime = inTime;
+	}
+
+	public String getOutTime() {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		return sdf.format(outTime);
+	}
+
+	private void setOutTime(Date outTime) {
+		this.outTime = outTime;
+	}
+
+	public float getSalary() {
+		return salary;
+	}
+
+	private void setSalary(float salary) {
+		this.salary = salary;
 	}
 }

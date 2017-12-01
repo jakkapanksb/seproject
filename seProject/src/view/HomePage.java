@@ -1,25 +1,37 @@
 package view;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.EventQueue;
 
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JSeparator;
 import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JFormattedTextField;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
-import company.DatabaseConnector;
 import company.Personnel;
+import company.PersonnelManagement;
+import company.TimeReported;
 import company.TimeSystem;
+import view.SetWorkTimePage;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JButton;
+import java.awt.Color;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+
+import java.awt.Toolkit;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.awt.event.ActionEvent;
 
 public class HomePage {
 	
@@ -27,234 +39,225 @@ public class HomePage {
 	private Boolean status;
 	private Personnel personnel;
 	private String personnelID;
-	private JFrame frame;
+	private JFrame frmHomePage;
 	private JTable infoTable;
+	private JTable reportTable;
+	private JTable manageTable;
+	private JButton btnClockin;
+	private JButton btnClockout;
+	private PersonnelManagement pm;
 
+
+	/**
+	 * Create the application.
+	 * @param personnel2 
+	 * @param status2 
+	 * @param personnel2 
+	 * @param status2 
+	 */
 	public HomePage(Boolean inStatus,Personnel inPersonnel) {
+		pm = new PersonnelManagement();
 		status = inStatus;
 		personnel = inPersonnel;
 		personnelID = inPersonnel.getID();
 		timeSys = new TimeSystem();
 		
-		if (personnel.getPermission() == 1){
-			homeLevel1();
-		} else if (personnel.getPermission() == 2){
-			homeLevel2();
-		}
+		frmHomePage = new JFrame();
+		frmHomePage.setIconImage(Toolkit.getDefaultToolkit().getImage(HomePage.class.getResource("/javax/swing/plaf/metal/icons/ocean/homeFolder.gif")));
+		frmHomePage.setTitle("Home Page");
+		frmHomePage.getContentPane().setBackground(new Color(255, 250, 205));
+		frmHomePage.setBounds(100, 100, 575, 460);
+		frmHomePage.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmHomePage.setVisible(true);
+		
+		initialize();
 	}
-	
-	private void homeLevel1(){
+
+	/**
+	 * Initialize the contents of the frame.
+	 * @param <btnClockout>
+	 */
+	private <btnClockout> void initialize() {
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBackground(new Color(230, 230, 250));
+		tabbedPane.setBounds(10, 11, 539, 362);
+		frmHomePage.getContentPane().add(tabbedPane);
 		
-		frame = new JFrame();
-		frame.setBounds(100, 100, 575, 460);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		frame.setTitle("Company");
+		JPanel infoPanel = new JPanel();
+		infoPanel.setBackground(new Color(255, 255, 240));
+		tabbedPane.addTab("Infomation", null, infoPanel, null);
+		infoPanel.setLayout(null);
 		
-		JLabel lblHome = new JLabel("Home");
-		lblHome.setFont(new Font(lblHome.getFont().getName(), lblHome.getFont().getStyle(), 30));
-		
-		String[] column = {"title","info"};
-		DefaultTableModel tableModel = new DefaultTableModel(column,0);
+		String[] infoHeader = {"TITLE","INFO"};
+		infoTable = new JTable();
+		infoTable.setBounds(10, 11, 514, 312);
+		DefaultTableModel tableModel = new DefaultTableModel(0,0);
+		tableModel.setColumnIdentifiers(infoHeader);
+		infoTable.setModel(tableModel);
 		tableModel.addRow(new String[]{"ID", personnel.getID()});
 		tableModel.addRow(new String[]{"Name", personnel.getName()});
 		tableModel.addRow(new String[]{"Position", personnel.getPosition()});
 		tableModel.addRow(new String[]{"Department", personnel.getDepartment()});
-		infoTable = new JTable(tableModel);
+		infoPanel.add(infoTable);
 		
-		JButton btnLogout = new JButton("Logout");
-		btnLogout.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-				LoginPage login = new LoginPage();
+		JPanel reportPanel = new JPanel();
+		reportPanel.setBackground(new Color(255, 255, 240));
+		tabbedPane.addTab("Time Report", null, reportPanel, null);
+		reportPanel.setLayout(null);
+				
+		JScrollPane reportScrollPane = new JScrollPane();
+		reportScrollPane.setBounds(10, 11, 514, 312);
+		reportPanel.add(reportScrollPane);
+		
+		String[] reportHeader = {"ID","NAME","DATE","CHECK IN","CHECK OUT","SALARY"};
+		reportTable = new JTable();
+		DefaultTableModel dtm = new DefaultTableModel(0, 0);
+		dtm.setColumnIdentifiers(reportHeader);
+		if(personnel.getPermission()==1){
+			ArrayList<TimeReported> timeReported = timeSys.getUserTimeReported(personnel.getID());
+			for(TimeReported report : timeReported){
+				dtm.addRow(new Object[] { report.getID(), report.getName(), report.getDate()
+				, report.getInTime(), report.getOutTime(), report.getSalary()});
 			}
-		});
-		
-		JButton btnClockIn = new JButton("Clock In");
-		btnClockIn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				TimeSystem.createInTime(personnelID);
-				frame.removeAll();
-				homeLevel1();
-				frame.validate();
+		}
+		else if(personnel.getPermission()==2){
+			ArrayList<TimeReported> timeReported = timeSys.getAllTimeReported();
+			for(TimeReported report : timeReported){
+				dtm.addRow(new Object[] { report.getID(), report.getName(), report.getDate()
+				, report.getInTime(), report.getOutTime(), report.getSalary()});
 			}
-		});
-		btnClockIn.setPreferredSize(new Dimension(90, 25));
+		}
+		reportTable.setModel(dtm);
+		reportScrollPane.setViewportView(reportTable);
 		
-		JButton btnClockOut = new JButton("Clock Out");
-		btnClockOut.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TimeSystem.createOutTime(personnelID);
-				frame.removeAll();
-				homeLevel1();
-				frame.validate();
+		if(personnel.getPermission()==2){
+			JPanel managePanel = new JPanel();
+			managePanel.setBackground(new Color(255, 255, 240));
+			tabbedPane.addTab("Personnel Management", null, managePanel, null);
+			managePanel.setLayout(null);
+			
+			JScrollPane manageScrollPane = new JScrollPane();
+			manageScrollPane.setBounds(10, 11, 514, 278);
+			managePanel.add(manageScrollPane);
+			
+			String[] manageHeader = {"ID","NAME","POSITION","DEPARTMENT","PERMISSION","SALARY"};
+			manageTable = new JTable();
+			DefaultTableModel manageModel = new DefaultTableModel(0, 0);
+			manageModel.setColumnIdentifiers(manageHeader);
+			ArrayList<Personnel> personnelList = pm.getAllPersonnel();
+			for(Personnel person : personnelList){
+				manageModel.addRow(new Object[] { person.getID(), person.getName(), person.getPosition()
+				, person.getDepartment(), person.getPermission(), person.getSalary()});
 			}
-		});
-		btnClockOut.setPreferredSize(new Dimension(90, 25));
-		
-		if (status == false){
-			btnClockOut.setEnabled(false);
-		} else{
-			btnClockIn.setEnabled(false);
+			manageTable.setModel(manageModel);
+			manageScrollPane.setViewportView(manageTable);
+			
+			JButton btnDelete = new JButton("Delete");
+			btnDelete.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					//freeze homePage until close manageDelete
+					frmHomePage.setEnabled(false);
+					
+					ManageDeletePage manageDelete = new ManageDeletePage(frmHomePage);
+					
+					//build new manageTable
+					manageTable = new JTable();
+					DefaultTableModel manageModel = new DefaultTableModel(0, 0);
+					manageModel.setColumnIdentifiers(manageHeader);
+					ArrayList<Personnel> personnelList = pm.getAllPersonnel();
+					for(Personnel person : personnelList){
+						manageModel.addRow(new Object[] { person.getID(), person.getName(), person.getPosition()
+						, person.getDepartment(), person.getPermission(), person.getSalary()});
+					}
+					manageModel.addRow(new Object[] { "afterdelete1", "data", "data","data", "data", "data" });
+					manageModel.addRow(new Object[] { "afterdelete2", "data", "data","data", "data", "data" });
+					manageTable.setModel(manageModel);
+					manageScrollPane.setViewportView(manageTable);
+				}
+			});
+			
+			btnDelete.setBackground(new Color(240, 255, 240));
+			btnDelete.setBounds(10, 300, 89, 23);
+			managePanel.add(btnDelete);
+			
+			JButton btnAdd = new JButton("Add");
+			btnAdd.setBackground(new Color(240, 255, 240));
+			btnAdd.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					frmHomePage.setEnabled(false);
+					AddOrEdit edit = new AddOrEdit("Add",frmHomePage);
+				}
+			});
+			btnAdd.setBounds(435, 300, 89, 23);
+			managePanel.add(btnAdd);
+			
+			JButton btnEdit = new JButton("Edit");
+			btnEdit.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					frmHomePage.setEnabled(false);
+					AddOrEdit edit = new AddOrEdit("Edit",frmHomePage);
+				}
+			});
+			btnEdit.setBackground(new Color(240, 255, 240));
+			btnEdit.setBounds(220, 300, 89, 23);
+			managePanel.add(btnEdit);
+			
+			JButton btnSetWorkingTime = new JButton("Set Working Time");
+			btnSetWorkingTime.setBackground(new Color(224, 255, 255));
+			btnSetWorkingTime.setBounds(212, 384, 152, 23);
+			btnSetWorkingTime.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					frmHomePage.setEnabled(false);
+					SetWorkTimePage swt = new SetWorkTimePage(status,personnel,frmHomePage);
+				}
+			});
+			frmHomePage.getContentPane().add(btnSetWorkingTime);
 		}
 		
-		JLabel lblInformation = new JLabel("Information");
-		lblInformation.setHorizontalAlignment(JLabel.CENTER);
-		lblInformation.setOpaque(true);
-		lblInformation.setBackground(new Color(102, 178, 255));
-		
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(56)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(infoTable, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-						.addComponent(lblInformation, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnClockIn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnClockOut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addGap(57))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(242, Short.MAX_VALUE)
-					.addComponent(lblHome)
-					.addGap(240))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(248, Short.MAX_VALUE)
-					.addComponent(btnLogout)
-					.addGap(246))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(lblHome)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnClockIn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnClockOut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblInformation, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(infoTable, GroupLayout.PREFERRED_SIZE, 244, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnLogout)
-					.addGap(19))
-		);
-		frame.getContentPane().setLayout(groupLayout);
-	}
-	
-private void homeLevel2(){
-	
-		frame = new JFrame();
-		frame.setBounds(100, 100, 575, 460);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-		frame.setTitle("Company");
-		
-		JLabel lblHome = new JLabel("Home");
-		lblHome.setFont(new Font(lblHome.getFont().getName(), lblHome.getFont().getStyle(), 30));
-		
-		String[] column = {"title","info"};
-		DefaultTableModel tableModel = new DefaultTableModel(column,0);
-		tableModel.addRow(new String[]{"ID", personnel.getID()});
-		tableModel.addRow(new String[]{"Name", personnel.getName()});
-		tableModel.addRow(new String[]{"Position", personnel.getPosition()});
-		tableModel.addRow(new String[]{"Department", personnel.getDepartment()});
-		infoTable = new JTable(tableModel);
-		
-		JButton btnLogout = new JButton("Logout");
-		btnLogout.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-				LoginPage login = new LoginPage();
+		btnClockin = new JButton("Clockin");
+		btnClockin.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				timeSys.createInTime(personnelID);
+				btnClockout.setEnabled(true);
 			}
 		});
+		btnClockin.setBackground(new Color(224, 255, 255));
+		btnClockin.setBounds(10, 384, 89, 23);
+		frmHomePage.getContentPane().add(btnClockin);
 		
-		JButton btnClockIn = new JButton("Clock In");
-		btnClockIn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				TimeSystem.createInTime(personnelID);
-				frame.removeAll();
-				homeLevel2();
-				frame.validate();
+		JButton btnClockout = new JButton("Clockout");
+		btnClockout.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				timeSys.createOutTime(personnelID);
+				btnClockout.setEnabled(false);
 			}
 		});
-		btnClockIn.setPreferredSize(new Dimension(90, 25));
-		
-		JButton btnClockOut = new JButton("Clock Out");
-		btnClockOut.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TimeSystem.createOutTime(personnelID);
-				frame.removeAll();
-				homeLevel2();
-				frame.validate();
-			}
-		});
-		btnClockOut.setPreferredSize(new Dimension(90, 25));
+		btnClockout.setBackground(new Color(224, 255, 255));
+		btnClockout.setBounds(111, 384, 89, 23);
+		frmHomePage.getContentPane().add(btnClockout);
 		
 		if (status == false){
-			btnClockOut.setEnabled(false);
+			btnClockout.setEnabled(false);
 		} else{
-			btnClockIn.setEnabled(false);
+			btnClockin.setEnabled(false);
 		}
 		
-		JButton btnSetWorkingTime = new JButton("Set Working Time");
-		btnSetWorkingTime.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				SetWorkTimePage swt = new SetWorkTimePage(status,personnel);
-				System.exit(0);
+		JButton btnLogout = new JButton("Logout");
+		btnLogout.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				frmHomePage.dispose();
+				LoginPage loginPage = new LoginPage();
 			}
 		});
+		btnLogout.setBounds(460, 384, 89, 23);
+		btnLogout.setBackground(new Color(255, 192, 203));
+		frmHomePage.getContentPane().add(btnLogout);
 		
-		JLabel lblInformation = new JLabel("Information");
-		lblInformation.setHorizontalAlignment(JLabel.CENTER);
-		lblInformation.setOpaque(true);
-		lblInformation.setBackground(new Color(102, 178, 255));
-		
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(56)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(infoTable, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-						.addComponent(lblInformation, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnClockIn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnClockOut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnSetWorkingTime)))
-					.addGap(57))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(242, Short.MAX_VALUE)
-					.addComponent(lblHome)
-					.addGap(240))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(248, Short.MAX_VALUE)
-					.addComponent(btnLogout)
-					.addGap(246))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(lblHome)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnClockIn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnClockOut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSetWorkingTime))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblInformation, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(infoTable, GroupLayout.PREFERRED_SIZE, 244, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnLogout)
-					.addGap(19))
-		);
-		frame.getContentPane().setLayout(groupLayout);
-	}
+		frmHomePage.getContentPane().setLayout(null);
+		}
 }

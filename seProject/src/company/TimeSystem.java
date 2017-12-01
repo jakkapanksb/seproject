@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class TimeSystem {
 
-	private static DatabaseConnector database;
+	private DatabaseConnector database;
 	private ArrayList<TimeReported> timeReporteds;
 	
 	public TimeSystem(){
@@ -17,7 +17,7 @@ public class TimeSystem {
 		timeReporteds = new ArrayList<TimeReported>();
 	}
 	
-	public static void createInTime(String id){
+	public void createInTime(String id){
 		Date time = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		String stime = sdf.format(time);
@@ -26,7 +26,7 @@ public class TimeSystem {
 		database.insertInTime(id,date,stime);
 	}
 	
-	public static void createOutTime(String id){
+	public void createOutTime(String id){
 		Date time = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		String stime = sdf.format(time);
@@ -39,6 +39,7 @@ public class TimeSystem {
 		Date clockOut = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
 		try {
+			System.out.println(workTime[0]);
 			clockIn = sdf.parse(workTime[0]);
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -61,15 +62,17 @@ public class TimeSystem {
 	}
 	
 	public ArrayList<TimeReported> getAllTimeReported(){
+		timeReporteds = database.getAllTime();
 		return timeReporteds;
 	}
 	
-	public TimeReported getUserTimeReported(String id){
+	public ArrayList<TimeReported> getUserTimeReported(String id){
+		ArrayList<TimeReported> userT = new ArrayList<TimeReported>();
 		for (TimeReported timeRe : timeReporteds){
 			if (timeRe.getID().matches(id)){
-				return timeRe;
+				userT.add(timeRe);
 			}
 		}
-		return null;
+		return userT;
 	}
 }
